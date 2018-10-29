@@ -1,30 +1,25 @@
-// Module:  regfile
-// File:    regfile.v
-// Description: 通用寄存器，共32个
-// Revision: 1.0
-//////////////////////////////////////////////////////////////////////
 
 `include "defines.v"
 
 module regfile(
 
-	input wire clk,
-	input wire rst,
+	input	wire										clk,
+	input wire										rst,
 	
 	//写端口
-	input wire we,
-	input wire[`RegAddrBus] waddr,
-	input wire[`RegBus] wdata,
+	input wire										we,
+	input wire[`RegAddrBus]				waddr,
+	input wire[`RegBus]						wdata,
 	
 	//读端口1
-	input wire re1,
-	input wire[`RegAddrBus] raddr1,
-	output reg[`RegBus] rdata1,
+	input wire										re1,
+	input wire[`RegAddrBus]			  raddr1,
+	output reg[`RegBus]           rdata1,
 	
 	//读端口2
-	input wire re2,
-	input wire[`RegAddrBus]  raddr2,
-	output reg[`RegBus] rdata2
+	input wire										re2,
+	input wire[`RegAddrBus]			  raddr2,
+	output reg[`RegBus]           rdata2
 	
 );
 

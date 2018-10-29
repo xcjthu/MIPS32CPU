@@ -1,18 +1,13 @@
-// Module:  pc_reg
-// File:    pc_reg.v
-// Description: Ö¸ÁîÖ¸Õë¼Ä´æÆ÷PC
-// Revision: 1.0
-//////////////////////////////////////////////////////////////////////
 
 `include "defines.v"
 
 module pc_reg(
 
-	input wire clk,
-	input wire rst,
+	input	wire										clk,
+	input wire										rst,
 	
-	output reg[`InstAddrBus] pc,
-	output reg ce
+	output reg[`InstAddrBus]			pc,
+	output reg                    ce
 	
 );
 

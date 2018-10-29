@@ -34,11 +34,11 @@
 
 
 //AluOp
-`define EXE_OR_OP   8'b00100101
+`define EXE_OR_OP    8'b00100101
 `define EXE_ORI_OP  8'b01011010
 
 
-`define EXE_NOP_OP  8'b00000000
+`define EXE_NOP_OP    8'b00000000
 
 //AluSel
 `define EXE_RES_LOGIC 3'b001

@@ -1,15 +1,10 @@
-// Module:  id_ex
-// File:    id_ex.v
-// Description: ID/EX阶段的寄存器
-// Revision: 1.0
-//////////////////////////////////////////////////////////////////////
 
 `include "defines.v"
 
 module id_ex(
 
-	input wire clk,
-	input wire rst,
+	input	wire										clk,
+	input wire										rst,
 
 	
 	//从译码阶段传递的信息
