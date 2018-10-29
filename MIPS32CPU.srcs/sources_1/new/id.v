@@ -113,31 +113,81 @@ module id(
                          endcase
 		              end // if (op2)
 		      end //`EXE
+		      
+		    //ADDI ADDIU SLTI SLTIU 几个指令格式一样，对于几个信号要求也基本一样，所以在这一步操作基本上是一样的，然而我没找到啥好方法可以把这几个合并
 		    `EXE_ADDI:
 		      begin
-		          
+		          wreg_o <= `WriteEnable;
+		          aluop_o <= `EXE_ADDI_OP;
+		          alusel_o <= `EXE_RES_ARITHMETIC;
+		          reg1_read_o <= 1'b1;
+		          reg2_read_o <= 1'b0; //这是写的目的寄存器
+		          imm <= {{16{inst_i[15]}}, inst_i[15:0]}; //符号位扩展
+		          wd_o <= inst_i[20:16];
+		          instvalid <= `InstValid;
 		      end //`EXE_ADDI
 		    `EXE_ADDIU:
 		      begin
+		          wreg_o <= `WriteEnable;
+		          aluop_o <= `EXE_ADDIU_OP;
+		          alusel_o <= `EXE_RES_ARITHMETIC;
+		          reg1_read_o <= 1'b1;
+		          reg2_read_o <= 1'b0;
+		          imm <= {{16{inst_i[15]}}, inst_i[15:0]}; //符号位扩展
+		          wd_o <= inst_i[20:16];
+		          instvalid <= `InstValid;
 		      end //`EXE_ADDIU
 		     `EXE_SLTI:
 		      begin
-		          
+		          wreg_o <= `WriteEnable;
+                  aluop_o <= `EXE_SLTI_OP;
+                  alusel_o <= `EXE_RES_ARITHMETIC;
+                  reg1_read_o <= 1'b1;
+                  reg2_read_o <= 1'b0;
+                  imm <= {{16{inst_i[15]}}, inst_i[15:0]}; //符号位扩展
+                  wd_o <= inst_i[20:16];
+                  instvalid <= `InstValid;
 		      end //`EXE_SLTI
 		     `EXE_SLTIU:
 		      begin
+		          wreg_o <= `WriteEnable;
+                  aluop_o <= `EXE_SLTIU_OP;
+                  alusel_o <= `EXE_RES_ARITHMETIC;
+                  reg1_read_o <= 1'b1;
+                  reg2_read_o <= 1'b0;
+                  imm <= {{16{inst_i[15]}}, inst_i[15:0]}; //符号位扩展
+                  wd_o <= inst_i[20:16];
+                  instvalid <= `InstValid;
 		      end //`EXE_SLTIU
 		     `EXE_SPECIAL2_INST:
 		      begin
 		          case (op3)
 		              `EXE_CLZ:
 		                  begin
+		                      wreg_o <= 1'b1;
+		                      aluop_o <= `EXE_CLZ_OP;
+		                      alusel_o <= `EXE_RES_ARITHMETIC;
+		                      reg1_read_o <= 1'b1;
+		                      reg2_read_o <= 1'b0;
+		                      instvalid <= `InstValid;
 		                  end //`EXE_CLZ
 		              `EXE_CLO:
 		                  begin
+		                      wreg_o <= 1'b1;
+                              aluop_o <= `EXE_CLZ_OP;
+                              alusel_o <= `EXE_RES_ARITHMETIC;
+                              reg1_read_o <= 1'b1;
+                              reg2_read_o <= 1'b0;
+                              instvalid <= `InstValid;
 		                  end //`EXE_CLO
 		              `EXE_MUL:
 		                  begin
+		                      wreg_o <= `WriteEnable;
+		                      aluop_o <= `EXE_MUL_OP;
+		                      alusel_o <= `EXE_RES_MUL;
+		                      reg1_read_o <= 1'b1;
+		                      reg2_read_o <= 1'b1;
+		                      instcalid <= `InstValid;
 		                  end //`EXE_MUL
 		              default:
 		                  begin
