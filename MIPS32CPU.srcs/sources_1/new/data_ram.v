@@ -22,79 +22,63 @@
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-// Module:  mem_wb
-// File:    mem_wb.v
+// Module:  data_ram
+// File:    data_ram.v
 // Author:  Lei Silei
 // E-mail:  leishangwen@163.com
-// Description: MEM/WB阶段的寄存器
+// Description: 数据存储器
 // Revision: 1.0
 //////////////////////////////////////////////////////////////////////
 
 `include "defines.v"
 
-module mem_wb(
+module data_ram(
 
 	input	wire										clk,
-	input wire										rst,
-
-  //来自控制模块的信息
-	input wire[5:0]               stall,	
-
-	//来自访存阶段的信息	
-	input wire[`RegAddrBus]       mem_wd,
-	input wire                    mem_wreg,
-	input wire[`RegBus]					 mem_wdata,
-	input wire[`RegBus]           mem_hi,
-	input wire[`RegBus]           mem_lo,
-	input wire                    mem_whilo,	
-	
-	input wire                  mem_LLbit_we,
-	input wire                  mem_LLbit_value,	
-
-	//送到回写阶段的信息
-	output reg[`RegAddrBus]      wb_wd,
-	output reg                   wb_wreg,
-	output reg[`RegBus]					 wb_wdata,
-	output reg[`RegBus]          wb_hi,
-	output reg[`RegBus]          wb_lo,
-	output reg                   wb_whilo,
-
-	output reg                  wb_LLbit_we,
-	output reg                  wb_LLbit_value			       
+	input wire										ce,
+	input wire										we,
+	input wire[`DataAddrBus]			addr,
+	input wire[3:0]								sel,
+	input wire[`DataBus]						data_i,
+	output reg[`DataBus]					data_o
 	
 );
 
+	reg[`ByteWidth]  data_mem0[0:`DataMemNum-1];
+	reg[`ByteWidth]  data_mem1[0:`DataMemNum-1];
+	reg[`ByteWidth]  data_mem2[0:`DataMemNum-1];
+	reg[`ByteWidth]  data_mem3[0:`DataMemNum-1];
 
 	always @ (posedge clk) begin
-		if(rst == `RstEnable) begin
-			wb_wd <= `NOPRegAddr;
-			wb_wreg <= `WriteDisable;
-		  wb_wdata <= `ZeroWord;	
-		  wb_hi <= `ZeroWord;
-		  wb_lo <= `ZeroWord;
-		  wb_whilo <= `WriteDisable;
-		  wb_LLbit_we <= 1'b0;
-		  wb_LLbit_value <= 1'b0;			  	
-		end else if(stall[4] == `Stop && stall[5] == `NoStop) begin
-			wb_wd <= `NOPRegAddr;
-			wb_wreg <= `WriteDisable;
-		  wb_wdata <= `ZeroWord;
-		  wb_hi <= `ZeroWord;
-		  wb_lo <= `ZeroWord;
-		  wb_whilo <= `WriteDisable;	
-		  wb_LLbit_we <= 1'b0;
-		  wb_LLbit_value <= 1'b0;			  	  	  
-		end else if(stall[4] == `NoStop) begin
-			wb_wd <= mem_wd;
-			wb_wreg <= mem_wreg;
-			wb_wdata <= mem_wdata;
-			wb_hi <= mem_hi;
-			wb_lo <= mem_lo;
-			wb_whilo <= mem_whilo;		
-		  wb_LLbit_we <= mem_LLbit_we;
-		  wb_LLbit_value <= mem_LLbit_value;				
-		end    //if
-	end      //always
-			
+		if (ce == `ChipDisable) begin
+			//data_o <= ZeroWord;
+		end else if(we == `WriteEnable) begin
+			  if (sel[3] == 1'b1) begin
+		      data_mem3[addr[`DataMemNumLog2+1:2]] <= data_i[31:24];
+		    end
+			  if (sel[2] == 1'b1) begin
+		      data_mem2[addr[`DataMemNumLog2+1:2]] <= data_i[23:16];
+		    end
+		    if (sel[1] == 1'b1) begin
+		      data_mem1[addr[`DataMemNumLog2+1:2]] <= data_i[15:8];
+		    end
+			  if (sel[0] == 1'b1) begin
+		      data_mem0[addr[`DataMemNumLog2+1:2]] <= data_i[7:0];
+		    end			   	    
+		end
+	end
+	
+	always @ (*) begin
+		if (ce == `ChipDisable) begin
+			data_o <= `ZeroWord;
+	  end else if(we == `WriteDisable) begin
+		    data_o <= {data_mem3[addr[`DataMemNumLog2+1:2]],
+		               data_mem2[addr[`DataMemNumLog2+1:2]],
+		               data_mem1[addr[`DataMemNumLog2+1:2]],
+		               data_mem0[addr[`DataMemNumLog2+1:2]]};
+		end else begin
+				data_o <= `ZeroWord;
+		end
+	end		
 
 endmodule

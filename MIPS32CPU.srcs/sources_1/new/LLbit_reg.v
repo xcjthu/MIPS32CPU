@@ -22,79 +22,40 @@
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
-// Module:  mem_wb
-// File:    mem_wb.v
+// Module:  LLbit_reg
+// File:    LLbit_reg.v
 // Author:  Lei Silei
 // E-mail:  leishangwen@163.com
-// Description: MEM/WB阶段的寄存器
+// Description: 保存LLbit，用在SC、LL指令中
 // Revision: 1.0
 //////////////////////////////////////////////////////////////////////
 
 `include "defines.v"
 
-module mem_wb(
+module LLbit_reg(
 
 	input	wire										clk,
 	input wire										rst,
-
-  //来自控制模块的信息
-	input wire[5:0]               stall,	
-
-	//来自访存阶段的信息	
-	input wire[`RegAddrBus]       mem_wd,
-	input wire                    mem_wreg,
-	input wire[`RegBus]					 mem_wdata,
-	input wire[`RegBus]           mem_hi,
-	input wire[`RegBus]           mem_lo,
-	input wire                    mem_whilo,	
 	
-	input wire                  mem_LLbit_we,
-	input wire                  mem_LLbit_value,	
-
-	//送到回写阶段的信息
-	output reg[`RegAddrBus]      wb_wd,
-	output reg                   wb_wreg,
-	output reg[`RegBus]					 wb_wdata,
-	output reg[`RegBus]          wb_hi,
-	output reg[`RegBus]          wb_lo,
-	output reg                   wb_whilo,
-
-	output reg                  wb_LLbit_we,
-	output reg                  wb_LLbit_value			       
+	input wire                    flush,
+	//写端口
+	input wire										LLbit_i,
+	input wire                    we,
+	
+	//读端口1
+	output reg                    LLbit_o
 	
 );
 
 
 	always @ (posedge clk) begin
-		if(rst == `RstEnable) begin
-			wb_wd <= `NOPRegAddr;
-			wb_wreg <= `WriteDisable;
-		  wb_wdata <= `ZeroWord;	
-		  wb_hi <= `ZeroWord;
-		  wb_lo <= `ZeroWord;
-		  wb_whilo <= `WriteDisable;
-		  wb_LLbit_we <= 1'b0;
-		  wb_LLbit_value <= 1'b0;			  	
-		end else if(stall[4] == `Stop && stall[5] == `NoStop) begin
-			wb_wd <= `NOPRegAddr;
-			wb_wreg <= `WriteDisable;
-		  wb_wdata <= `ZeroWord;
-		  wb_hi <= `ZeroWord;
-		  wb_lo <= `ZeroWord;
-		  wb_whilo <= `WriteDisable;	
-		  wb_LLbit_we <= 1'b0;
-		  wb_LLbit_value <= 1'b0;			  	  	  
-		end else if(stall[4] == `NoStop) begin
-			wb_wd <= mem_wd;
-			wb_wreg <= mem_wreg;
-			wb_wdata <= mem_wdata;
-			wb_hi <= mem_hi;
-			wb_lo <= mem_lo;
-			wb_whilo <= mem_whilo;		
-		  wb_LLbit_we <= mem_LLbit_we;
-		  wb_LLbit_value <= mem_LLbit_value;				
-		end    //if
-	end      //always
-			
+		if (rst == `RstEnable) begin
+					LLbit_o <= 1'b0;
+		end else if((flush == 1'b1)) begin
+					LLbit_o <= 1'b0;
+		end else if((we == `WriteEnable)) begin
+					LLbit_o <= LLbit_i;
+		end
+	end
 
 endmodule
