@@ -50,11 +50,17 @@ module regfile(
 	//读端口2
 	input wire										re2,
 	input wire[`RegAddrBus]			  raddr2,
-	output reg[`RegBus]           rdata2
+	output reg[`RegBus]           rdata2,
+
+	//暴露出19号寄存器
+	output wire[15:0]			  counter_reg
 	
 );
 
 	reg[`RegBus]  regs[0:`RegNum-1];
+
+	//通过assign将19号寄存器实时更新到counter_reg
+	assign counter_reg = regs[19][15:0];
 
 	always @ (posedge clk) begin
 		if (rst == `RstDisable) begin

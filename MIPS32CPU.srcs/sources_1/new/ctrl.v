@@ -40,7 +40,13 @@ module ctrl(
 
   //来自执行阶段的暂停请求
 	input wire                   stallreq_from_ex,
-	output reg[5:0]              stall       
+	output reg[5:0]              stall,
+
+	//来自取指阶段的暂停请求
+	input wire					 stallreq_from_if,
+
+	//来自访存阶段的暂停请求
+	input wire					 stallreq_from_mem
 	
 );
 
@@ -51,7 +57,13 @@ module ctrl(
 		end else if(stallreq_from_ex == `Stop) begin
 			stall <= 6'b001111;
 		end else if(stallreq_from_id == `Stop) begin
-			stall <= 6'b000111;			
+			stall <= 6'b000111;
+		end else if(stallreq_from_if == `Stop) begin
+			stall <= 6'b000111;
+			flush <= 1'b0;
+		end else if(stallreq_from_mem == `Stop) begin
+			stall <= 6'b011111;
+			flush <= 1'b0;
 		end else begin
 			stall <= 6'b000000;
 		end    //if
