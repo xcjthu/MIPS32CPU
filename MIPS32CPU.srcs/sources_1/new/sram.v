@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 module sram(
     input wire Hclock,
     input wire Hreset,
@@ -11,11 +10,12 @@ module sram(
     input wire Hwrite,
     input wire[3:0] H_be_n,
     input wire ready,
+    input wire Hselect,
     input wire[31:0] Hwritedata,
     input wire[19:0] Haddress,
     output reg[31:0] Hreaddata,
-    output wire Hready,
-    output reg Hresponse
+    output wire Hready
+    //output reg Hresponse
     );
     reg[31:0] data_temp;
     reg[3:0] state;
@@ -23,16 +23,16 @@ module sram(
     reg[19:0] Haddress_temp;
     reg[3:0] H_be_n_temp;
     reg control;
-    assign Hready = (state != WriteWord1) & (state != WriteWord2);
     assign Ram1data = (control == 1'b1)?data_temp:{32{1'bz}};
     localparam WriteWord1 = 4'd1, WriteWord2 = 4'd2, ReadWord = 4'd3, idle = 4'd4, WriteWord3 = 4'd5;
+    assign Hready = (state != WriteWord1) & (state != WriteWord2);
     always @(posedge Hclock or negedge Hreset) begin
         if (Hreset == 0) begin
             state <= idle;
             Haddress_temp <= 20'b0;
             Hwritedata_temp <= 32'b0;
             H_be_n_temp <= 4'b1111;
-        end else if(ready == 1) begin
+        end else if(Hselect == 1 && ready == 1) begin
             Haddress_temp <= Haddress;
             Hwritedata_temp <= Hwritedata;
             H_be_n_temp <= H_be_n;
@@ -68,7 +68,7 @@ module sram(
             data_temp = 32'b0;
             control = 1'b1;
             Ram1Address = 20'b0;
-            Hresponse = 1'b0;
+            //Hresponse = 1'b0;
         end else begin
             case(state)
                 WriteWord1: begin
@@ -80,7 +80,7 @@ module sram(
                     Ram1EN = 1'b1;
                     Ram1BE = 4'b1111;
                     Hreaddata = 32'b0;
-                    Hresponse = 0;
+                    //Hresponse = 0;
                 end
                 WriteWord2: begin
                     Ram1Address = Haddress_temp;
@@ -91,7 +91,7 @@ module sram(
                     Ram1EN = 1'b0;
                     Ram1BE = H_be_n_temp;
                     Hreaddata = 32'b0;
-                    Hresponse = 0;
+                    //Hresponse = 0;
                 end
                 WriteWord3: begin
                     Ram1Address = Haddress_temp;
@@ -102,7 +102,7 @@ module sram(
                     Ram1EN = 1'b1;
                     Ram1BE = 4'b1111;
                     Hreaddata = 32'b0;
-                    Hresponse = 0;
+                    //Hresponse = 0;
                 end
                 ReadWord: begin
                     control = 1'b0;
@@ -113,7 +113,7 @@ module sram(
                     data_temp = 32'b0;
                     Ram1Address = Haddress_temp;
                     Hreaddata = Ram1data;
-                    Hresponse = 0;
+                    //Hresponse = 0;
                 end
                 default: begin
                     Ram1Address = Haddress_temp;
@@ -123,7 +123,7 @@ module sram(
                     Ram1EN = 1'b1;
                     Ram1BE = 4'b1111;
                     data_temp = 32'b0;
-                    Hresponse = 0;
+                    //Hresponse = 0;
                     Hreaddata = 32'b0;
                 end
             endcase

@@ -28,10 +28,10 @@
 // E-mail:  leishangwen@163.com
 // Description: 基于OpenMIPS处理器的一个简单SOPC，用于验证具备了
 //              wishbone总线接口的openmips，该SOPC包含openmips、
-//              wb_conmax、GPIO controller、flash controller，uart 
+//              wb_conmax、GPIO controller、flash controller，uart
 //              controller，以及用来仿真flash的模块flashmem，在其中
 //              存储指令，用来仿真外部ram的模块datamem，在其中存储
-//              数据，并且具有wishbone总线接口    
+//              数据，并且具有wishbone总线接口
 // Revision: 1.0
 //////////////////////////////////////////////////////////////////////
 
@@ -41,7 +41,7 @@ module openmips_min_sopc(
 
 	input	wire										clk,
 	input wire										rst,
-	
+
 	input wire clk_50M,           //50MHz 时钟输入
     input wire clk_11M0592,       //11.0592MHz 时钟输入
 
@@ -119,7 +119,7 @@ module openmips_min_sopc(
     output wire video_vsync,       //场同步（垂直同步）信号
     output wire video_clk,         //像素时钟输出
     output wire video_de           //行数据有效信号，用于区分消隐区
-	
+
 );
 
 //中间连线
@@ -131,18 +131,23 @@ module openmips_min_sopc(
  wire[3:0]      dwishbone_sel_o_m,
  wire           dwishbone_stb_o_m,
  wire           dwishbone_cyc_o_m,
- 
+
 
  //实例化cpu
  	openmips openmips0(
 		.clk(clk),
 		.rst(rst),
-	
+		.int_i(6'b000000),
+
 		.dwishbone_data_i(dwishbone_data_i_m),
 		.dwishbone_ack_i(dwishbone_ack_i_m),
 		.dwishbone_addr_o(dwishbone_addr_o_m),
 		.dwishbone_data_o(dwishbone_data_o_m),
-		.dwishbone_we_o(dwishbone_we_o_m)
+		.dwishbone_we_o(dwishbone_we_o_m),
+		.dwishbone_sel_o(dwishbone_sel_o_m),
+		.dwishbone_stb_o(dwishbone_stb_o_m),
+		.dwishbone_cyc_o(dwishbone_cyc_o_m),
+		.timer_int_o(1'b0)
 	);
 
 	//实例化data_sram
@@ -152,10 +157,18 @@ module openmips_min_sopc(
 		.Hwrite(dwishbone_we_o_m),
 		.ready(dwishbone_stb_o_m),
 		.H_be_n(dwishbone_sel_o_m),
+		.Hselect(dwishbone_cyc_o_m),
 		.Haddress(dwishbone_addr_o_m[19:0]),
 		.Hwritedata(dwishbone_data_o_m),
 		.Hready(dwishbone_ack_i_m),
-		.Hreaddata(dwishbone_data_i_m)
+		.Hreaddata(dwishbone_data_i_m),
+
+		.Ram1OE(base_ram_oe_n),
+		.Ram1WE(base_ram_we_n),
+		.Ram1EN(base_ram_ce_n),
+		.Ram1BE(base_ram_be_n),
+		.Ram1Address(base_ram_addr),
+		.Ram1data(base_ram_data),
 );
 
 endmodule

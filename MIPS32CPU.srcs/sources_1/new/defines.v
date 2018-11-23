@@ -104,6 +104,22 @@
 `define EXE_SWL  6'b101010
 `define EXE_SWR  6'b101110
 
+`define EXE_SYSCALL 6'b001100
+
+`define EXE_TEQ 6'b110100
+`define EXE_TEQI 5'b01100
+`define EXE_TGE 6'b110000
+`define EXE_TGEI 5'b01000
+`define EXE_TGEIU 5'b01001
+`define EXE_TGEU 6'b110001
+`define EXE_TLT 6'b110010
+`define EXE_TLTI 5'b01010
+`define EXE_TLTIU 5'b01011
+`define EXE_TLTU 6'b110011
+`define EXE_TNE 6'b110110
+`define EXE_TNEI 5'b01110
+
+`define EXE_ERET 32'b01000010000000000000000000011000
 
 `define EXE_NOP 6'b000000
 `define SSNOP 32'b00000000000000000000000001000000
@@ -190,6 +206,26 @@
 `define EXE_SWR_OP  8'b11101110
 `define EXE_SYNC_OP  8'b00001111
 
+`define EXE_MFC0_OP 8'b01011101
+`define EXE_MTC0_OP 8'b01100000
+
+`define EXE_SYSCALL_OP 8'b00001100
+
+`define EXE_TEQ_OP 8'b00110100
+`define EXE_TEQI_OP 8'b01001000
+`define EXE_TGE_OP 8'b00110000
+`define EXE_TGEI_OP 8'b01000100
+`define EXE_TGEIU_OP 8'b01000101
+`define EXE_TGEU_OP 8'b00110001
+`define EXE_TLT_OP 8'b00110010
+`define EXE_TLTI_OP 8'b01000110
+`define EXE_TLTIU_OP 8'b01000111
+`define EXE_TLTU_OP 8'b00110011
+`define EXE_TNE_OP 8'b00110110
+`define EXE_TNEI_OP 8'b01001001
+
+`define EXE_ERET_OP 8'b01101011
+
 `define EXE_NOP_OP    8'b00000000
 
 //AluSel
@@ -207,8 +243,8 @@
 //ָ���洢��inst_rom
 `define InstAddrBus 31:0
 `define InstBus 31:0
-`define InstMemNum 262143
-`define InstMemNumLog2 18
+`define InstMemNum 131071
+`define InstMemNumLog2 17
 
 //���ݴ洢��data_ram
 `define DataAddrBus 31:0
@@ -236,3 +272,18 @@
 `define DivResultNotReady 1'b0
 `define DivStart 1'b1
 `define DivStop 1'b0
+
+//CP0�Ĵ�����ַ
+`define CP0_REG_COUNT    5'b01001        //�ɶ�д
+`define CP0_REG_COMPARE    5'b01011      //�ɶ�д
+`define CP0_REG_STATUS    5'b01100       //�ɶ�д
+`define CP0_REG_CAUSE    5'b01101        //ֻ��
+`define CP0_REG_EPC    5'b01110          //�ɶ�д
+`define CP0_REG_PrId    5'b01111         //ֻ��
+`define CP0_REG_CONFIG    5'b10000       //ֻ��
+
+//wishbone���ߵ�״̬��
+`define WB_IDLE 2'b00
+`define WB_BUSY 2'b01
+`define WB_WAIT_FOR_FLUSHING 2'b10
+`define WB_WAIT_FOR_STALL 2'b11
