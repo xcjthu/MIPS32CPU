@@ -40,6 +40,7 @@ module ctrl(
 
   //来自执行阶段的暂停请求
 	input wire                   stallreq_from_ex,
+	output reg                   flush,
 	output reg[5:0]              stall,
 
 	//来自取指阶段的暂停请求
